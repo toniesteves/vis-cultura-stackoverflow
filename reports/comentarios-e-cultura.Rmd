@@ -1,5 +1,5 @@
 ---
-title: "Comentários e cultura"
+title: "Comentários e cultura - Antônio Esteves"
 output:
     html_document:
     df_print: paged
@@ -10,7 +10,7 @@ theme: sandstone
 library(tidyverse)
 library(here)
 library(viridis)
-source(here::here("code/lib.R"))
+# source(here::here("code/lib.R"))
 theme_set(theme_bw())
 
 knitr::opts_chunk$set(tidy = FALSE,
@@ -44,11 +44,107 @@ Considerando essa variável, queremos examinar a relação entre ela e o quão h
 
 Faça uma visualização que usa os princípios de eficácia no projeto de visualizações para facilitar as comparações que você acha que são as mais importantes para entendermos esse contexto. 
 
+```{r}
+dados %>% 
+    filter(!is.na(Internet))%>%
+    ggplot( aes(x=comentaram_prop, y=PDI)) +
+    geom_point(aes(size=usuarios, color = Internet), alpha=0.6) +
+    scale_colour_continuous(low = '#ff4040', high = '#32CD32') +
+    labs(size = "Database Size", color = "People Internet Access ") + 
+    theme(
+      plot.title = element_text(size=12)
+    ) +
+    ylab('Power Distance Index') +
+    xlab('People comments proportion (Country)')
+```
+
+
 ## Outras formas de ver
 
 Em seguida, faça 5 visualizações que usem as mesmas variáveis e também pontos, mas que sejam **menos eficazes** que a que você escolheu acima. 
+
+```{r}
+dados %>%
+    ggplot(aes( 
+        x = comentaram_prop*100,
+        y = country,
+        color = PDI,
+        size = usuarios
+        #color = 
+    )) +
+    labs(size = "Database Size", color = "Power Distance Index") + 
+    geom_point(alpha = .6) + 
+    labs(x = "Comentários em %", y = "Países")
+```
+
+```{r}
+dados %>%
+    ggplot(aes(x=PDI, y=comentaram_prop, color=usuarios)) + geom_point() +
+        labs(size = "Database Size", color = "People Internet Access ") + 
+    theme(
+      plot.title = element_text(size=12)
+    ) +
+    ylab('People Internet Access') +
+    xlab('People comments proportion (Country)')
+```
+
+```{r}
+dados %>%
+    ggplot(aes(x=PDI, y=comentaram_prop, size=usuarios)) + 
+    geom_point(alpha = .6, color= "#6AB3A2") +
+    labs(size = "Database Size", color = "People Internet Access ") + 
+    theme(
+      plot.title = element_text(size=12)
+    ) +
+    ylab('People Internet Access') +
+    xlab('People comments proportion (Country)')
+    
+```
+ 
+
+```{r}
+dados %>%
+    filter(Internet >= 50 & usuarios > 3000)  %>%
+    ggplot(aes( 
+        x = comentaram_prop*100,
+        y = PDI,
+        color = country
+    )) +
+    geom_point(alpha = .6) + 
+    labs(size = "Database Size", color = "Countries") + 
+    facet_grid(site ~ ., scales = "free_y") +
+    labs(x = "People comments proportion (Country)", y = "PDI")
+```
+
+```{r}
+dados %>%
+    ggplot(aes( 
+        x = comentaram_prop*100,
+        y = PDI,
+        color = country
+        #color = 
+    )) +
+    geom_point(alpha = .6) + 
+    facet_grid(site ~ ., scales = "free_y") +
+    labs(x = "People comments proportion (Country)", y = "PDI")
+```
 
 ## Bônus
 
 Inclua o continente dos países (`six_regions`) na visualização.
 
+```{r}
+dados %>%
+    filter(Internet >= 50 & usuarios > 3000)  %>%
+    ggplot(aes( 
+        x = comentaram_prop*100,
+        y = country,
+        color = six_regions,
+        size = PDI
+    )) +
+    scale_color_manual(labels = c("América", "East Asia Pacific", "Europe Central Asia", "Middle East North Africa"), values = c("red", "blue", "green", "orange")) +
+    geom_point(alpha = .6) + 
+    facet_wrap(six_regions ~ ., scales = "free_y") +
+    labs(size = "Power Distance Index", color = "Regions") + 
+    labs(x = "People comments proportion (Country)", y = "Countries", color = "Region")
+```
